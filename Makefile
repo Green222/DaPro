@@ -10,7 +10,7 @@ BIN=test_flat_set
 all: $(BIN)
 
 src/bench/benchmark.o: src/bench/benchmark.cc
-	$(CXX) $(CXXFLAGS) -c -o $@ $< 
+	$(CXX) $(CXXFLAGS) -O3 -c -o $@ $< 
 
 bench: src/bench/benchmark.o
 	$(CXX) $(CXXFLAGS) -O3 $^ -o $@
