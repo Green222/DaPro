@@ -11,6 +11,9 @@ LIBSO=libbind.so
 
 all: $(BIN) $(LIBA) $(LIBSO)
 
+check: $(BIN)
+	./$(BIN)
+
 $(LIBA): $(OBJ)
 	ar csr $@ $(OBJ)
 
