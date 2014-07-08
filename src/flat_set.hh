@@ -1,6 +1,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <initializer_list>
 
 template <
   class Key,
@@ -13,21 +14,25 @@ template <
 public:
   std::vector<Key, Allocator> v_;
 
-  Compare key_compare;
-  Allocator allocator_type;
+  typedef Compare key_compare;
+  typedef Allocator allocator_type;
 
-  explicit flat_set (const Compare& comp = key_compare(),
-                const Allocator& alloc = allocator_type())
-    : key_compare(comp)
-    , allocator_type(allocator_type)
+  flat_set()
+    : v_()
+    {}
+
+  explicit flat_set (const Compare& comp,
+                     const Allocator& alloc = allocator_type())
+    : v_(alloc)
+    , key_compare(comp)
     {
-      v_ = new std::vector<Key, Allocator>();
+      //v_ = new std::vector<Key, Allocator>();
     }
 
   explicit flat_set (const Allocator& alloc)
-  : allocator_type(alloc)
+  : v_(alloc)
     {
-      v_ = new std::vector<Key, Allocator>();
+      //v_ = new std::vector<Key, Allocator>();
     }
 
   template <class InputIterator>
@@ -67,7 +72,7 @@ public:
   , allocator_type(x.allocator_type)
     {}
 
-  flat_set (initializer_list<value_type> il,
+  flat_set (std::initializer_list<Key> il,
        const Compare& comp = key_compare(),
        const Allocator& alloc = allocator_type())
     : v_(alloc)
@@ -90,86 +95,123 @@ public:
       return *this;
     }
 
-  flat_set& operator= (initializer_list<value_type> il)
+  flat_set& operator= (std::initializer_list<Key> il)
     {
       this->clear();
       this->insert(il.begin(), il.end());
-      std::sort(v_.begin(), v_.end(), key_compare);
+      std::sort(v_.begin(), v_.end(), key_compare());
     }
 
   Compare key_comp() const
-    { return key_compare; }
+    { return key_compare(); }
   Compare value_comp() const
-    { return key_compare; }
+    { return key_compare(); }
   Allocator get_allocator()
-    { return allocator_type; }
+    { return allocator_type(); }
 
-  std::vector<Key, Allocator>::const_iterator begin()
+  typename std::vector<Key, Allocator>::const_iterator begin()
     { return v_.begin(); }
 
-  std::vector<Key, Allocator>::const_iterator end()
+  typename std::vector<Key, Allocator>::const_iterator end()
     { return v_.end(); }
 
-  std::vector<Key, Allocator>::const_iterator rbegin()
+  typename std::vector<Key, Allocator>::const_iterator rbegin()
     { return v_.rbegin(); }
 
-  std::vector<Key, Allocator>::const_iterator rend()
+  typename std::vector<Key, Allocator>::const_iterator rend()
     { return v_.rend(); }
 
-  std::vector<Key, Allocator>::const_iterator cbegin()
+  typename std::vector<Key, Allocator>::const_iterator cbegin()
     { return v_.cbegin(); }
 
-  std::vector<Key, Allocator>::const_iterator cend()
+  typename std::vector<Key, Allocator>::const_iterator cend()
     { return v_.cend(); }
 
-  std::vector<Key, Allocator>::const_iterator crbegin()
+  typename std::vector<Key, Allocator>::const_iterator crbegin()
     { return v_.crbegin(); }
 
-  std::vector<Key, Allocator>::const_iterator crend()
+  typename std::vector<Key, Allocator>::const_iterator crend()
     { return v_.crend(); }
 
   bool empty() const
     { return v_.empty(); }
 
-  std::vector<Key, Allocator>::size_type size() const
+  typename std::vector<Key, Allocator>::size_type size() const
     { return v_.size(); }
 
-  std::vector<Key, Allocator>::size_type max_size() const
+  typename std::vector<Key, Allocator>::size_type max_size() const
     { return v_.max_size(); }
 
   void swap(flat_set& x)
     { v_.swap(x.v_); }
 
   std::pair<iterator, bool>
-  insert(const Key x)
+  insert(const Key& x)
     {
-      std::pair<iterator, bool> p = v_.insert(x);
-      std::sort(v_.begin(), v_.end(), key_compare);
-      return std::pair<iterator, bool>(p.first, p.second);
+      iterator i = this->find(x);
+      if (i == v_.end())
+      {
+        iterator it = v_.insert(v_.begin(), x);
+        std::sort(v_.begin(), v_.end(), key_compare());
+        return std::make_pair(it, true);
+      }
+      return std::make_pair(i, false);
+    }
+
+  std::pair<iterator, bool>
+  insert(Key& x)
+    {
+      iterator i = this->find(x);
+      if (i == v_.end())
+      {
+        iterator it = v_.insert(v_.begin(), x);
+        std::sort(v_.begin(), v_.end(), key_compare());
+        return std::make_pair(it, true);
+      }
+      return std::make_pair(i, false);
     }
 
   iterator
   insert(iterator pos, const Key& x)
     {
-      iterator i = v_.insert(pos, x);
-      std::sort(v_.begin(), v_.end(), key_compare);
+      iterator i = this->find(x);
+      if (i == v_.end())
+      {
+        iterator it = v_.insert(pos, x);
+        std::sort(v_.begin(), v_.end(), key_compare());
+        return it;
+      }
+      return i;
+    }
+
+  iterator
+  insert(iterator pos, Key& x)
+    {
+      iterator i = this->find(x);
+      if (i == v_.end())
+      {
+        iterator it = v_.insert(pos, x);
+        std::sort(v_.begin(), v_.end(), key_compare());
+        return it;
+      }
       return i;
     }
 
   template <typename InputIterator>
   void insert(InputIterator first, InputIterator last)
     {
-      v_.insert(v_.begin(), first, last);
-      std::sort(v_.begin(), v_.end(), key_compare);
+      while (first != last)
+        this->insert((*first)++);
+      std::sort(v_.begin(), v_.end(), key_compare());
     }
 
-  void insert(initializer_list<Key> l)
+  void insert(std::initializer_list<Key> l)
     { this->insert(l.begin(), l.end()); }
 
   void erase(iterator pos)
     { v_.erase(pos); }
 
-  std::vector<Key, Allocator>::size_type
+  typename std::vector<Key, Allocator>::size_type
   erase(const Key& x)
     { this->erase(this->find(x)); }
 
@@ -179,7 +221,7 @@ public:
   void clear()
     { v_.clear(); }
 
-  std::vector<Key, Allocator>::size_type
+  typename std::vector<Key, Allocator>::size_type
   count(const Key& x) const
     { return find(x) == v_.end() ? 0 : 1; }
 
