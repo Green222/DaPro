@@ -4,9 +4,16 @@ DIR=src/
 SRC=main.cc
 S_SRC=$(addprefix $(DIR), $(SRC))
 OBJ=$(S_SRC:.cc=.o)
+OBJ2=$(src/bench:.cc=.o)
 BIN=test_flat_set
 
 all: $(BIN)
+
+src/bench/benchmark.o: src/bench/benchmark.cc
+	$(CXX) $(CXXFLAGS) -c -o $@ $< 
+
+bench: src/bench/benchmark.o
+	$(CXX) $(CXXFLAGS) -O3 $^ -o $@
 
 $(BIN): $(OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@

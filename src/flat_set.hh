@@ -11,6 +11,7 @@ template <
 
 public:
   typedef typename std::vector<Key, Allocator>::const_iterator iterator;
+  typedef typename std::vector<Key, Allocator>::const_iterator const_iterator;
   std::vector<Key, Allocator> v_;
 
   typedef Compare key_compare;
