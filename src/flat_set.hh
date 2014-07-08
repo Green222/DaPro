@@ -35,7 +35,6 @@ public:
        const Compare& comp = key_compare(),
        const Allocator& alloc = allocator_type())
     : v_(alloc)
-    , key_compare(comp)
     {
       v_.insert(v_.begin(), first, last);
       std::sort(v_.begin(), v_.end(), comp);
@@ -43,35 +42,28 @@ public:
 
   flat_set (const flat_set& x)
   : v_(x.v_)
-  , key_compare(x.key_compare)
     {}
 
   flat_set (const flat_set& x, const Allocator& alloc)
     : v_(x.v_)
-    , key_compare(x.key_compare)
-    , allocator_type(x.allocator_type)
     {}
 
   flat_set (flat_set&& x)
   : v_(std::forward<
          std::vector<Key, Allocator>
          >(x.v_))
-  , key_compare(x.key_compare)
     {}
 
   flat_set (flat_set&& x, const Allocator& alloc)
   : v_(std::forward<
          std::vector<Key, Allocator>
          >(x.v_))
-  , key_compare(x.key_compare)
-  , allocator_type(x.allocator_type)
-    {}
+  {}
 
   flat_set (std::initializer_list<Key> il,
        const Compare& comp = key_compare(),
        const Allocator& alloc = allocator_type())
     : v_(alloc)
-    , key_compare(comp)
     {
       v_.insert(v_.begin(), il.begin(), il.end());
       std::sort(v_.begin(), v_.end(), comp);
