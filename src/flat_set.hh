@@ -5,7 +5,7 @@
 template <
   class Key,
   class Compare = std::less<Key>,
-  class Allocator = std::Allocator<Key>
+  class Allocator = std::allocator<Key>
   > class flat_set {
 
   typedef typename std::vector<Key, Allocator>::const_iterator iterator;
@@ -16,7 +16,7 @@ public:
   Compare key_compare;
   Allocator allocator_type;
 
-  explicit set (const Compare& comp = key_compare(),
+  explicit flat_set (const Compare& comp = key_compare(),
                 const Allocator& alloc = allocator_type())
     : key_compare(comp)
     , allocator_type(allocator_type)
@@ -24,14 +24,14 @@ public:
       v_ = new std::vector<Key, Allocator>();
     }
 
-  explicit set (const allocator_type& alloc)
+  explicit flat_set (const Allocator& alloc)
   : allocator_type(alloc)
     {
       v_ = new std::vector<Key, Allocator>();
     }
 
   template <class InputIterator>
-  set (InputIterator first, InputIterator last,
+  flat_set (InputIterator first, InputIterator last,
        const Compare& comp = key_compare(),
        const Allocator& alloc = allocator_type())
     : v_(alloc)
@@ -41,25 +41,25 @@ public:
       std::sort(v_.begin(), v_.end(), comp);
     }
 
-  set (const flat_set& x)
+  flat_set (const flat_set& x)
   : v_(x.v_)
   , key_compare(x.key_compare)
     {}
 
-  set (const flat_set& x, const Allocator& alloc)
+  flat_set (const flat_set& x, const Allocator& alloc)
     : v_(x.v_)
     , key_compare(x.key_compare)
     , allocator_type(x.allocator_type)
     {}
 
-  set (set&& x)
+  flat_set (flat_set&& x)
   : v_(std::forward<
          std::vector<Key, Allocator>
          >(x.v_))
   , key_compare(x.key_compare)
     {}
 
-  set (set&& x, const Allocator& alloc)
+  flat_set (flat_set&& x, const Allocator& alloc)
   : v_(std::forward<
          std::vector<Key, Allocator>
          >(x.v_))
@@ -67,7 +67,7 @@ public:
   , allocator_type(x.allocator_type)
     {}
 
-  set (initializer_list<value_type> il,
+  flat_set (initializer_list<value_type> il,
        const Compare& comp = key_compare(),
        const Allocator& alloc = allocator_type())
     : v_(alloc)
