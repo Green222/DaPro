@@ -9,9 +9,8 @@ template <
   class Allocator = std::allocator<Key>
   > class flat_set {
 
-  typedef typename std::vector<Key, Allocator>::const_iterator iterator;
-
 public:
+  typedef typename std::vector<Key, Allocator>::const_iterator iterator;
   std::vector<Key, Allocator> v_;
 
   typedef Compare key_compare;
@@ -25,15 +24,11 @@ public:
                      const Allocator& alloc = allocator_type())
     : v_(alloc)
     , key_compare(comp)
-    {
-      //v_ = new std::vector<Key, Allocator>();
-    }
+    {}
 
   explicit flat_set (const Allocator& alloc)
   : v_(alloc)
-    {
-      //v_ = new std::vector<Key, Allocator>();
-    }
+    {}
 
   template <class InputIterator>
   flat_set (InputIterator first, InputIterator last,
@@ -211,8 +206,8 @@ public:
   void erase(iterator pos)
     { v_.erase(pos); }
 
-  typename std::vector<Key, Allocator>::size_type
-  erase(const Key& x)
+  //typename std::vector<Key, Allocator>::size_type
+  void erase(const Key& x)
     { this->erase(this->find(x)); }
 
   void erase(iterator first, iterator last)
