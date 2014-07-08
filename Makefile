@@ -4,6 +4,7 @@ DIR=src/
 SRC=main.cc
 S_SRC=$(addprefix $(DIR), $(SRC))
 OBJ=$(S_SRC:.cc=.o)
+OBJSRC=src/bind.cc
 BIN=test_flat_set
 LIBA=libbind.a
 LIBSO=libbind.so
